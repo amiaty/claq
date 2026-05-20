@@ -6,3 +6,5 @@ __pycache__/
 **/*.egg-info/
 .DS_Store
 **/.DS_Store
+/artifacts/models/concept_qa_bias_in_bios*.pt
+/artifacts/runs/concept_qa_bias_in_bios*_cache.pt
