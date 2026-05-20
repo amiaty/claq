@@ -1,0 +1,183 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6073273029881965,
+      "dev_loss": 0.6054090734451048,
+      "dev_mae": 0.014499121345579624,
+      "dev_rmse": 0.03799650818109512,
+      "dev_pearson": 0.9819155931472778,
+      "dev_spearman": 0.9863191843032837,
+      "dev_hard_accuracy": 0.9666684216068637
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6054545501709933,
+      "dev_loss": 0.6053262545216468,
+      "dev_mae": 0.014902215451002121,
+      "dev_rmse": 0.03742330148816109,
+      "dev_pearson": 0.9831069707870483,
+      "dev_spearman": 0.9877963066101074,
+      "dev_hard_accuracy": 0.9642880655104115
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.6051139969593488,
+      "dev_loss": 0.6049573879088125,
+      "dev_mae": 0.013097897171974182,
+      "dev_rmse": 0.035670582205057144,
+      "dev_pearson": 0.9840884804725647,
+      "dev_spearman": 0.9882400631904602,
+      "dev_hard_accuracy": 0.9698417221346209
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.6048800534685373,
+      "dev_loss": 0.6047998489872102,
+      "dev_mae": 0.012332098558545113,
+      "dev_rmse": 0.034849345684051514,
+      "dev_pearson": 0.9849165081977844,
+      "dev_spearman": 0.9889798164367676,
+      "dev_hard_accuracy": 0.9715853195036611
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.604692171570321,
+      "dev_loss": 0.6048798818742075,
+      "dev_mae": 0.012164147570729256,
+      "dev_rmse": 0.03528547286987305,
+      "dev_pearson": 0.9845127463340759,
+      "dev_spearman": 0.9889588356018066,
+      "dev_hard_accuracy": 0.9730489669307586
+    }
+  ],
+  "test_metrics": {
+    "loss": 0.6049863183221151,
+    "mae": 0.012139723636209965,
+    "rmse": 0.03507128730416298,
+    "pearson": 0.9850271940231323,
+    "spearman": 0.9891501069068909,
+    "hard_accuracy": 0.9730768915294676
+  },
+  "target_metadata": {
+    "target_strategy": "encoder_similarity_for_general_concepts__rules_for_literal_sensitive_concepts",
+    "rule_target_low": 0.05,
+    "rule_target_high": 0.95,
+    "rule_concept_patterns": {
+      "direct_gender_pronouns": "\\b(he|him|his|she|her|hers)\\b",
+      "gendered_titles": "\\b(mr|mrs|ms|miss|sir|madam)\\.?\\b",
+      "gendered_family_roles": "\\b(wife|wives|husband|husbands|mother|mothers|father|fathers|daughter|daughters|son|sons)\\b",
+      "gendered_organization_or_award": "\\b(women'?s|men'?s|female|male|girls?|boys?)\\b"
+    }
+  },
+  "rule_target_diagnostics": [
+    {
+      "split": "train",
+      "concept": "direct_gender_pronouns",
+      "hit_rate": 0.9486402869224548,
+      "encoder_mean_if_hit": 0.5093082785606384,
+      "encoder_mean_if_miss": 0.4762590229511261,
+      "target_mean_if_hit": 0.9499998688697815,
+      "target_mean_if_miss": 0.050000011920928955
+    },
+    {
+      "split": "train",
+      "concept": "gendered_titles",
+      "hit_rate": 0.07844164967536926,
+      "encoder_mean_if_hit": 0.6699095368385315,
+      "encoder_mean_if_miss": 0.48907673358917236,
+      "target_mean_if_hit": 0.9499999284744263,
+      "target_mean_if_miss": 0.05000000447034836
+    },
+    {
+      "split": "train",
+      "concept": "gendered_family_roles",
+      "hit_rate": 0.03746727854013443,
+      "encoder_mean_if_hit": 0.6141881942749023,
+      "encoder_mean_if_miss": 0.502854585647583,
+      "target_mean_if_hit": 0.9499998092651367,
+      "target_mean_if_miss": 0.050000011920928955
+    },
+    {
+      "split": "train",
+      "concept": "gendered_organization_or_award",
+      "hit_rate": 0.020891105756163597,
+      "encoder_mean_if_hit": 0.6113068461418152,
+      "encoder_mean_if_miss": 0.503905713558197,
+      "target_mean_if_hit": 0.9499998688697815,
+      "target_mean_if_miss": 0.05000000819563866
+    },
+    {
+      "split": "dev",
+      "concept": "direct_gender_pronouns",
+      "hit_rate": 0.9482619166374207,
+      "encoder_mean_if_hit": 0.5095379948616028,
+      "encoder_mean_if_miss": 0.4745367765426636,
+      "target_mean_if_hit": 0.9499998688697815,
+      "target_mean_if_miss": 0.05000000819563866
+    },
+    {
+      "split": "dev",
+      "concept": "gendered_titles",
+      "hit_rate": 0.07890620827674866,
+      "encoder_mean_if_hit": 0.6681631803512573,
+      "encoder_mean_if_miss": 0.4892418682575226,
+      "target_mean_if_hit": 0.9499998688697815,
+      "target_mean_if_miss": 0.04999999701976776
+    },
+    {
+      "split": "dev",
+      "concept": "gendered_family_roles",
+      "hit_rate": 0.03758639842271805,
+      "encoder_mean_if_hit": 0.6133761405944824,
+      "encoder_mean_if_miss": 0.5032256245613098,
+      "target_mean_if_hit": 0.9499998092651367,
+      "target_mean_if_miss": 0.05000000447034836
+    },
+    {
+      "split": "dev",
+      "concept": "gendered_organization_or_award",
+      "hit_rate": 0.01944907009601593,
+      "encoder_mean_if_hit": 0.6165971755981445,
+      "encoder_mean_if_miss": 0.504519522190094,
+      "target_mean_if_hit": 0.9499999284744263,
+      "target_mean_if_miss": 0.05000000819563866
+    },
+    {
+      "split": "test",
+      "concept": "direct_gender_pronouns",
+      "hit_rate": 0.9490254521369934,
+      "encoder_mean_if_hit": 0.5097905397415161,
+      "encoder_mean_if_miss": 0.4763832986354828,
+      "target_mean_if_hit": 0.9499998092651367,
+      "target_mean_if_miss": 0.05000000447034836
+    },
+    {
+      "split": "test",
+      "concept": "gendered_titles",
+      "hit_rate": 0.07902573049068451,
+      "encoder_mean_if_hit": 0.6682230234146118,
+      "encoder_mean_if_miss": 0.48967668414115906,
+      "target_mean_if_hit": 0.949999988079071,
+      "target_mean_if_miss": 0.050000011920928955
+    },
+    {
+      "split": "test",
+      "concept": "gendered_family_roles",
+      "hit_rate": 0.03751930594444275,
+      "encoder_mean_if_hit": 0.6131710410118103,
+      "encoder_mean_if_miss": 0.5030059814453125,
+      "target_mean_if_hit": 0.949999988079071,
+      "target_mean_if_miss": 0.050000015646219254
+    },
+    {
+      "split": "test",
+      "concept": "gendered_organization_or_award",
+      "hit_rate": 0.020652271807193756,
+      "encoder_mean_if_hit": 0.6181027293205261,
+      "encoder_mean_if_miss": 0.504132091999054,
+      "target_mean_if_hit": 0.949999988079071,
+      "target_mean_if_miss": 0.05000000447034836
+    }
+  ]
+}
