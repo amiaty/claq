@@ -1,13 +1,19 @@
-# STAQ
+# CLAQ
 
-Code for `STAQ: Semantic Trustworthy Active Querying`.
+Research code for `Cost- and Leakage-Constrained Adaptive Concept Querying`.
 
-This repository contains the clean CIFAR-10 research workflow for:
+Current notebooks:
 
-- Concept-QA training
-- baseline training
-- STAQ training
-- tiny-start replay analysis
+- `notebooks/bias_in_bios_dataset_creation.ipynb`
+- `notebooks/bias_in_bios_concept_qa_training.ipynb`
+- `notebooks/bias_in_bios_experiment.ipynb`
+- `notebooks/celeba_experiment.ipynb`
+- `notebooks/cifar10_experiment.ipynb`
 
-Main notebook: `notebooks/cifar10_staq.ipynb`
+Install with:
 
+```bash
+pip install -e .
+```
+
+For Conda, create an environment with Python 3.10+ first, then run the same install command inside it.

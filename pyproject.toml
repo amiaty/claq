@@ -3,11 +3,25 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "staq-research"
+name = "claq-research"
 version = "0.1.0"
-description = "STAQ: Semantic Trustworthy Active Querying, adapted from the VIP paper repository."
-requires-python = ">=3.10"
+description = "Research code for Cost- and Leakage-Constrained Adaptive Concept Querying (CLAQ)."
+requires-python = ">=3.12"
+dependencies = [
+    "datasets",
+    "matplotlib",
+    "numpy",
+    "openai",
+    "pandas",
+    "python-dotenv",
+    "scikit-learn",
+    "sentence-transformers",
+    "torch",
+    "torchvision",
+    "tqdm",
+    "clip @ git+https://github.com/openai/CLIP.git",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["staq*"]
+include = ["claq*"]
