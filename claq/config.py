@@ -112,8 +112,8 @@ class Cifar10ClaqConfig:
     num_workers_cpu: int = 0
     default_train_epochs: int = 10
     learning_rate: float = 1e-4
-    lambda_adv: float = 0.0
-    alpha_sens: float = 0.0
+    lambda_s: float = 0.0
+    lambda_c: float = 0.0
     min_history: int = 1
     max_history: int = 2
     non_sensitive_history_only: bool = True
@@ -164,8 +164,8 @@ class CelebAClaqConfig:
     concept_qa_epochs: int = 3
     default_train_epochs: int = 5
     learning_rate: float = 1e-4
-    lambda_adv: float = 0.0
-    alpha_sens: float = 0.0
+    lambda_s: float = 0.0
+    lambda_c: float = 0.0
     min_history: int = 1
     max_history: int = 2
     non_sensitive_history_only: bool = True

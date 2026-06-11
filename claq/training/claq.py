@@ -81,8 +81,8 @@ def run_claq_epoch(
     clip_device: torch.device,
     train_device: torch.device,
     threshold_for_binarization: float,
-    lambda_adv: float,
-    alpha_sens: float,
+    lambda_s: float,
+    lambda_c: float,
     sensitive_tau: float,
     sensitive_topk: int,
     train: bool = True,
@@ -168,11 +168,11 @@ def run_claq_epoch(
             logits_cls = classifier(updated_answers)
             loss_task = crit_task(logits_cls, labels)
 
-            s_logits = s_head(GradientReversal.apply(updated_answers, lambda_adv)).squeeze(1)
+            s_logits = s_head(GradientReversal.apply(updated_answers, lambda_s)).squeeze(1)
             loss_sens = crit_sens(s_logits, s_target.to(train_device).float())
             sens_preds = (torch.sigmoid(s_logits) > 0.5).float()
             sens_acc = (sens_preds == s_target.to(train_device).float()).float().mean()
-            loss_qpen = (query_distribution * sensitive_mask).sum(dim=1).mean() * alpha_sens
+            loss_qpen = (query_distribution * sensitive_mask).sum(dim=1).mean() * lambda_c
             loss = loss_task + loss_sens + loss_qpen
 
             if train:
@@ -231,8 +231,8 @@ def fit_claq(
     clip_device: torch.device,
     train_device: torch.device,
     threshold_for_binarization: float,
-    lambda_adv: float,
-    alpha_sens: float,
+    lambda_s: float,
+    lambda_c: float,
     sensitive_tau: float,
     sensitive_topk: int,
     num_epochs: int,
@@ -271,8 +271,8 @@ def fit_claq(
             clip_device=clip_device,
             train_device=train_device,
             threshold_for_binarization=threshold_for_binarization,
-            lambda_adv=lambda_adv,
-            alpha_sens=alpha_sens,
+            lambda_s=lambda_s,
+            lambda_c=lambda_c,
             sensitive_tau=sensitive_tau,
             sensitive_topk=sensitive_topk,
             train=True,
@@ -294,8 +294,8 @@ def fit_claq(
             clip_device=clip_device,
             train_device=train_device,
             threshold_for_binarization=threshold_for_binarization,
-            lambda_adv=lambda_adv,
-            alpha_sens=alpha_sens,
+            lambda_s=lambda_s,
+            lambda_c=lambda_c,
             sensitive_tau=sensitive_tau,
             sensitive_topk=sensitive_topk,
             train=False,
@@ -308,8 +308,8 @@ def fit_claq(
 
         row = {
             "epoch": epoch,
-            "lambda_adv": lambda_adv,
-            "alpha_sens": alpha_sens,
+            "lambda_s": lambda_s,
+            "lambda_c": lambda_c,
             "train_acc": train_metrics["acc"],
             "train_loss": train_metrics["loss"],
             "train_task": train_metrics["task"],

@@ -14,7 +14,7 @@ from claq.analysis.rollouts import format_stop_sequence
 def plot_fixed_history_eval_summary(
     summary_rows: list[dict],
     output_path: str | Path,
-    hparam_name: str = "lambda_adv",
+    hparam_name: str = "lambda_s",
     hparam_label: str | None = None,
 ) -> Path:
     output_path = Path(output_path)
@@ -86,8 +86,8 @@ def plot_lambda_tradeoff_summary(
     if not summary_rows:
         raise ValueError("summary_rows must not be empty")
 
-    rows = sorted(summary_rows, key=lambda row: float(row["lambda_adv"]))
-    lambdas = [float(row["lambda_adv"]) for row in rows]
+    rows = sorted(summary_rows, key=lambda row: float(row["lambda_s"]))
+    lambdas = [float(row["lambda_s"]) for row in rows]
     acc = [float(row["test_acc"]) for row in rows]
     sens = [float(row["test_sens_q_rate"]) for row in rows]
 
@@ -95,7 +95,7 @@ def plot_lambda_tradeoff_summary(
 
     axes[0].plot(sens, acc, marker="o", linewidth=2.2, color="#3a6ea5")
     for row in rows:
-        label = "baseline" if float(row["lambda_adv"]) == 0.0 else f"lambda={row['lambda_adv']:.2f}"
+        label = "baseline" if float(row["lambda_s"]) == 0.0 else f"lambda_s={row['lambda_s']:.2f}"
         axes[0].annotate(
             label,
             (float(row["test_sens_q_rate"]), float(row["test_acc"])),
@@ -112,7 +112,7 @@ def plot_lambda_tradeoff_summary(
     axes[1].plot(lambdas, acc, marker="o", linewidth=2.2, label="Accuracy", color="#3a6ea5")
     axes[1].plot(lambdas, sens, marker="s", linewidth=2.2, label="Sensitive query rate", color="#b58b00")
     axes[1].set_title("Lambda sweep")
-    axes[1].set_xlabel("lambda_adv")
+    axes[1].set_xlabel("lambda_s")
     axes[1].set_ylabel("Metric value")
     axes[1].set_ylim(0.0, 1.0)
     axes[1].grid(alpha=0.25)

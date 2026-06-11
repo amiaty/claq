@@ -1,0 +1,45 @@
+{
+  "experiment_name": "bias_in_bios_claq_experiment",
+  "target": "original_28_way_profession",
+  "answer_source": "hard Concept-QA answers converted to -1/+1",
+  "training": "neural actor/classifier trained end-to-end on sampled partial histories",
+  "decision_threshold": 0.5,
+  "sensitive_target": "dataset gender label, 1=female and 0=male",
+  "max_questions": 20,
+  "num_epochs": 50,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "history_config": {
+    "min_history": 0,
+    "max_history": 20,
+    "non_sensitive_only": false
+  },
+  "num_concepts": 58,
+  "num_professions": 28,
+  "best_budget_by_run": [
+    {
+      "run_name": "neural_baseline_lambda_s_0",
+      "budget": 20,
+      "accuracy": 0.4995,
+      "macro_f1": 0.48518368558797115,
+      "mean_confidence": 0.4559755325317383
+    },
+    {
+      "run_name": "neural_claq_lambda_s_0_4",
+      "budget": 20,
+      "accuracy": 0.4895,
+      "macro_f1": 0.4933001170830934,
+      "mean_confidence": 0.4804081916809082
+    }
+  ],
+  "outputs": {
+    "curve": "artifacts/runs/bias_in_bios_claq_experiment_curve.csv",
+    "detail": "artifacts/runs/bias_in_bios_claq_experiment_detail.csv",
+    "stopping": "artifacts/runs/bias_in_bios_claq_experiment_stopping.csv",
+    "queries": "artifacts/runs/bias_in_bios_claq_experiment_queries.csv",
+    "history": "artifacts/runs/bias_in_bios_claq_experiment_history.csv",
+    "query_usage": "artifacts/runs/bias_in_bios_claq_experiment_query_usage.csv",
+    "sample_comparison": "artifacts/runs/bias_in_bios_claq_experiment_sample_comparison.csv",
+    "checkpoint": "artifacts/models/bias_in_bios_claq_experiment.pt"
+  }
+}

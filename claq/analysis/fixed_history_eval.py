@@ -116,13 +116,13 @@ def evaluate_bundles_on_fixed_histories(
         positive_prob_values = None
         if positive_class_idx is not None:
             positive_prob_values = np.array([row["avg_positive_prob"] for row in trial_rows], dtype=float)
-        lambda_adv = meta.get("lambda_adv")
-        alpha_sens = meta.get("alpha_sens")
+        lambda_s = meta.get("lambda_s")
+        lambda_c = meta.get("lambda_c")
 
         row = {
             "run_name": name,
-            "lambda_adv": None if lambda_adv is None else float(lambda_adv),
-            "alpha_sens": None if alpha_sens is None else float(alpha_sens),
+            "lambda_s": None if lambda_s is None else float(lambda_s),
+            "lambda_c": None if lambda_c is None else float(lambda_c),
             "num_samples": int(len(sample_indices)),
             "num_trials": int(num_trials),
             "history_mode": history_mode,
@@ -145,7 +145,7 @@ def evaluate_bundles_on_fixed_histories(
     return sorted(
         summary_rows,
         key=lambda row: (
-            float("-inf") if row["lambda_adv"] is None else row["lambda_adv"],
+            float("-inf") if row["lambda_s"] is None else row["lambda_s"],
             row["run_name"],
         ),
     )
