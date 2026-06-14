@@ -1,7 +1,7 @@
 [
   {
     "run_name": "baseline",
-    "lambda_adv": 0.0,
+    "lambda_s": 0.0,
     "best_epoch": 2,
     "test_acc": 0.7224543212362209,
     "test_sens_q_rate": 0.6740054965019227,
@@ -11,7 +11,7 @@
   },
   {
     "run_name": "lam_0.20",
-    "lambda_adv": 0.2,
+    "lambda_s": 0.2,
     "best_epoch": 4,
     "test_acc": 0.7145517692656164,
     "test_sens_q_rate": 0.3083228781819344,
@@ -21,7 +21,7 @@
   },
   {
     "run_name": "lam_0.40",
-    "lambda_adv": 0.4,
+    "lambda_s": 0.4,
     "best_epoch": 1,
     "test_acc": 0.6940655358131576,
     "test_sens_q_rate": 0.0,
@@ -31,7 +31,7 @@
   },
   {
     "run_name": "lam_0.80",
-    "lambda_adv": 0.8,
+    "lambda_s": 0.8,
     "best_epoch": 2,
     "test_acc": 0.701364071072633,
     "test_sens_q_rate": 0.0,
