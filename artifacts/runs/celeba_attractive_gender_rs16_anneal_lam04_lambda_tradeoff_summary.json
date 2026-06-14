@@ -2,41 +2,31 @@
   {
     "run_name": "baseline",
     "lambda_s": 0.0,
-    "best_epoch": 2,
-    "test_acc": 0.7224543212362209,
-    "test_sens_q_rate": 0.6740054965019227,
-    "test_loss": 0.7327864617109299,
+    "epoch": 5,
+    "test_acc": 0.7131423969396486,
+    "test_sens_q_rate": 0.4663322359323502,
+    "test_loss": 0.7897690981626511,
     "test_q_entropy": 6.999858692324779e-06,
-    "actor_eps": 0.8
+    "actor_eps": 0.19999999999999996
   },
   {
     "run_name": "lam_0.20",
     "lambda_s": 0.2,
-    "best_epoch": 4,
-    "test_acc": 0.7145517692656164,
-    "test_sens_q_rate": 0.3083228781819344,
-    "test_loss": 0.8325586229562759,
+    "epoch": 5,
+    "test_acc": 0.7042331504504958,
+    "test_sens_q_rate": 0.13183831349015235,
+    "test_loss": 0.868851175904274,
     "test_q_entropy": 6.999858692324779e-06,
-    "actor_eps": 0.3999999999999999
+    "actor_eps": 0.19999999999999996
   },
   {
     "run_name": "lam_0.40",
     "lambda_s": 0.4,
-    "best_epoch": 1,
-    "test_acc": 0.6940655358131576,
+    "epoch": 5,
+    "test_acc": 0.6939145316353752,
     "test_sens_q_rate": 0.0,
-    "test_loss": 0.9201234400272369,
+    "test_loss": 0.8795503556728363,
     "test_q_entropy": 6.999858692324779e-06,
-    "actor_eps": 1.0
-  },
-  {
-    "run_name": "lam_0.80",
-    "lambda_s": 0.8,
-    "best_epoch": 2,
-    "test_acc": 0.701364071072633,
-    "test_sens_q_rate": 0.0,
-    "test_loss": 0.8958917856216431,
-    "test_q_entropy": 6.999858692324779e-06,
-    "actor_eps": 0.8
+    "actor_eps": 0.19999999999999996
   }
 ]

@@ -214,9 +214,9 @@ def plot_rollout_comparisons(
     raw_dataset,
     output_path: str | Path,
     title_prefix: str,
-    box_fontsize: float = 14,
-    title_fontsize: float = 16,
-    text_wrap_width: int = 84,
+    box_fontsize: float = 19,
+    title_fontsize: float = 19,
+    text_wrap_width: int = 66,
     path_items: int = 10,
     confidence_items: int = 10,
     column_wspace: float = 0.10,
@@ -232,7 +232,7 @@ def plot_rollout_comparisons(
     fig, axes = plt.subplots(
         len(records),
         3,
-        figsize=(25.0, max(4.5, 4.3 * len(records))),
+        figsize=(25.0, max(3.6, 3.5 * len(records))),
         gridspec_kw={"width_ratios": [0.72, 2.55, 2.55]},
     )
     if len(records) == 1:
@@ -293,7 +293,7 @@ def plot_rollout_comparisons(
             bbox=dict(boxstyle="round,pad=0.40", facecolor="#eef5ff", edgecolor="#3a6ea5", linewidth=1.1),
         )
 
-    plt.subplots_adjust(left=left_margin, right=right_margin, top=0.965, bottom=0.03, wspace=column_wspace, hspace=0.30)
+    plt.subplots_adjust(left=left_margin, right=right_margin, top=0.965, bottom=0.03, wspace=column_wspace, hspace=0.55)
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return output_path
