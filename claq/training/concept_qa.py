@@ -2,18 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import torch
 import torch.nn.functional as F
 from tqdm.auto import tqdm
 
 from claq.core.clip_features import build_concept_qa_inputs, concept_qa_batch_inputs, encode_images
-
-
-def load_gpt_answers(path: str | Path) -> np.ndarray:
-    return np.load(path)
 
 
 def _unpack_concept_qa_batch(batch):
@@ -26,8 +20,12 @@ def _unpack_concept_qa_batch(batch):
     raise ValueError("Concept-QA batches must contain (images, labels) or (images, labels, concept_targets)")
 
 
-def prepare_concept_targets(labels: torch.Tensor, gpt_answers: np.ndarray, positive_depends: bool = True) -> torch.Tensor:
-    query_answers = gpt_answers[labels.cpu().numpy()]
+def prepare_concept_targets(
+    labels: torch.Tensor,
+    class_concept_targets: np.ndarray,
+    positive_depends: bool = True,
+) -> torch.Tensor:
+    query_answers = class_concept_targets[labels.cpu().numpy()]
     query_answers = np.where(query_answers == -1, np.zeros(query_answers.shape), query_answers)
     depends_value = np.ones(query_answers.shape) if positive_depends else np.zeros(query_answers.shape)
     query_answers = np.where(query_answers == 2, depends_value, query_answers)
@@ -36,19 +34,23 @@ def prepare_concept_targets(labels: torch.Tensor, gpt_answers: np.ndarray, posit
 
 def resolve_concept_targets(
     labels: torch.Tensor,
-    gpt_answers: np.ndarray | None = None,
+    class_concept_targets: np.ndarray | None = None,
     batch_targets: torch.Tensor | None = None,
     positive_depends: bool = True,
 ) -> torch.Tensor:
     if batch_targets is not None:
         return batch_targets.float()
-    if gpt_answers is None:
-        raise ValueError("gpt_answers are required when concept targets are not provided by the batch")
-    return prepare_concept_targets(labels=labels, gpt_answers=gpt_answers, positive_depends=positive_depends).float()
+    if class_concept_targets is None:
+        raise ValueError("class_concept_targets are required when concept targets are not provided by the batch")
+    return prepare_concept_targets(
+        labels=labels,
+        class_concept_targets=class_concept_targets,
+        positive_depends=positive_depends,
+    ).float()
 
 
 def concept_qa_loss(logits: torch.Tensor, query_answers: torch.Tensor, clip_scores: torch.Tensor) -> torch.Tensor:
-    # CIFAR-style weak-label loss: per-class GPT answers reweighted by CLIP similarity.
+    # Class-level weak labels reweighted by CLIP similarity.
     log_positive = F.logsigmoid(logits)
     log_negative = F.logsigmoid(-logits)
     loss = log_positive * (query_answers * clip_scores) + log_negative * (
@@ -68,7 +70,7 @@ def train_concept_qa_epoch(
     optimizer,
     model_clip,
     dictionary: torch.Tensor,
-    gpt_answers: np.ndarray | None,
+    class_concept_targets: np.ndarray | None,
     clip_device: torch.device,
     train_device: torch.device,
     positive_depends: bool = True,
@@ -92,10 +94,10 @@ def train_concept_qa_epoch(
             logits = model(inputs.to(train_device)).view(targets.size(0), num_queries).float()
             loss = concept_qa_bce_loss(logits=logits, query_answers=targets)
         else:
-            # Class-conditioned GPT answers reweighted by CLIP similarity.
+            # Class-conditioned concept targets reweighted by CLIP similarity.
             targets = resolve_concept_targets(
                 labels=labels,
-                gpt_answers=gpt_answers,
+                class_concept_targets=class_concept_targets,
                 batch_targets=None,
                 positive_depends=positive_depends,
             ).to(train_device)
@@ -128,7 +130,7 @@ def evaluate_concept_qa(
     loader,
     model_clip,
     dictionary: torch.Tensor,
-    gpt_answers: np.ndarray | None,
+    class_concept_targets: np.ndarray | None,
     clip_device: torch.device,
     train_device: torch.device,
     max_batches: int | None = None,
@@ -143,7 +145,7 @@ def evaluate_concept_qa(
         images, labels, batch_targets = _unpack_concept_qa_batch(batch)
         targets = resolve_concept_targets(
             labels=labels,
-            gpt_answers=gpt_answers,
+            class_concept_targets=class_concept_targets,
             batch_targets=batch_targets,
             positive_depends=False,
         ).to(train_device)
@@ -167,7 +169,7 @@ def fit_concept_qa(
     dictionary: torch.Tensor,
     clip_device: torch.device,
     train_device: torch.device,
-    gpt_answers: np.ndarray | None = None,
+    class_concept_targets: np.ndarray | None = None,
     max_train_batches: int | None = None,
     max_eval_batches: int | None = None,
 ):
@@ -179,7 +181,7 @@ def fit_concept_qa(
             optimizer=optimizer,
             model_clip=model_clip,
             dictionary=dictionary,
-            gpt_answers=gpt_answers,
+            class_concept_targets=class_concept_targets,
             clip_device=clip_device,
             train_device=train_device,
             max_batches=max_train_batches,
@@ -189,7 +191,7 @@ def fit_concept_qa(
             loader=eval_loader,
             model_clip=model_clip,
             dictionary=dictionary,
-            gpt_answers=gpt_answers,
+            class_concept_targets=class_concept_targets,
             clip_device=clip_device,
             train_device=train_device,
             max_batches=max_eval_batches,

@@ -23,7 +23,6 @@ class PathsConfig:
     assets_root: Path
     artifacts_root: Path
     concept_file: Path
-    gpt_answers_file: Path
 
     @property
     def models_root(self) -> Path:
@@ -77,7 +76,6 @@ class PathsConfig:
         self.reference_runs_root.mkdir(parents=True, exist_ok=True)
         self.figures_root.mkdir(parents=True, exist_ok=True)
         self.sensitive_labels_root.mkdir(parents=True, exist_ok=True)
-        (self.assets_root / "gpt_answers").mkdir(parents=True, exist_ok=True)
 
 
 def default_paths(repo_root: str | Path | None = None) -> PathsConfig:
@@ -90,7 +88,6 @@ def default_paths(repo_root: str | Path | None = None) -> PathsConfig:
         assets_root=assets_root,
         artifacts_root=repo_root / "artifacts",
         concept_file=assets_root / "concepts" / "cifar10.txt",
-        gpt_answers_file=assets_root / "gpt_answers" / "cifar10_answers_gpt4.npy",
     )
 
 
