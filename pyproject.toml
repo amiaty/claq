@@ -1,27 +1,72 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "claq-research"
-version = "0.1.0"
-description = "Research code for Cost- and Leakage-Constrained Adaptive Concept Querying (CLAQ)."
-requires-python = ">=3.12"
+version = "1.0.0"
+description = "Reference implementation of CLAQ: adaptive concept querying under cost and leakage constraints."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Behrooz Razeghi"}]
+keywords = [
+    "adaptive querying",
+    "concept-based learning",
+    "information leakage",
+    "privacy",
+    "trustworthy machine learning",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
-    "datasets",
-    "matplotlib",
-    "numpy",
-    "openai",
-    "pandas",
-    "python-dotenv",
-    "scikit-learn",
-    "sentence-transformers",
-    "torch",
-    "torchvision",
-    "tqdm",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "torch>=2.1",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+vision = [
+    "matplotlib>=3.8",
+    "pandas>=2.0",
+    "torchvision>=0.16",
+    "clip @ git+https://github.com/openai/CLIP.git",
+]
+text = [
+    "datasets>=2.18",
+    "openai>=1.0",
+    "pandas>=2.0",
+    "python-dotenv>=1.0",
+    "sentence-transformers>=2.6",
+]
+dev = [
+    "pytest>=7.4",
+]
+all = [
+    "datasets>=2.18",
+    "matplotlib>=3.8",
+    "openai>=1.0",
+    "pandas>=2.0",
+    "python-dotenv>=1.0",
+    "sentence-transformers>=2.6",
+    "torchvision>=0.16",
     "clip @ git+https://github.com/openai/CLIP.git",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["claq*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
