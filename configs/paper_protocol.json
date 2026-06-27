@@ -1,0 +1,54 @@
+{
+  "protocol_version": "canonical-precomputed-v1",
+  "global": {
+    "seeds": [0, 1, 2, 3, 4],
+    "operational_response_encoding": [-1, 1],
+    "unqueried_encoding": 0,
+    "condition_sensitive_on_y": true,
+    "training_state": "empty transcript",
+    "training_rollout": "unrolled to the active stopping rule or horizon",
+    "unit_query_cost": true,
+    "checkpoint_selection_split": "validation",
+    "checkpoint_selection_metric": "accuracy",
+    "checkpoint_selection_direction": "maximize",
+    "test_evaluations_per_checkpoint": 1,
+    "mi_alpha": 0.5,
+    "mi_min_support": 32,
+    "probe_c_grid": [0.01, 0.1, 1.0, 10.0],
+    "report_mean_and_sample_standard_deviation": true
+  },
+  "celeba": {
+    "target": "Attractive",
+    "sensitive": "Male",
+    "response_source": "dataset-provided binary attribute labels",
+    "lambdas": [0.0, 0.2, 0.4],
+    "budget": 16,
+    "epochs": 5,
+    "batch_size": 256,
+    "learning_rate": 0.0001,
+    "report_equalized_odds": true
+  },
+  "bias_in_bios": {
+    "target": "profession",
+    "sensitive": "gender",
+    "response_source": "validation-selected ConceptAnswererMLP hard responses",
+    "lambdas": [0.0, 0.4],
+    "budget": 20,
+    "epochs": 50,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "report_equalized_odds": true
+  },
+  "cifar10": {
+    "target": "object_class",
+    "sensitive": "constructed_binary_clip_concept_indicator",
+    "response_source": "validation-selected Concept-QA hard responses",
+    "lambdas": [0.0, 0.4],
+    "budget": 20,
+    "epochs": 5,
+    "batch_size": 256,
+    "learning_rate": 0.0001,
+    "report_equalized_odds": false
+  },
+  "note": "These values are explicit templates, not validated optimal hyperparameters. Any change must be recorded in the command, run manifest, and manuscript. Legacy point estimates are not results of this corrected protocol."
+}
