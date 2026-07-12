@@ -11,6 +11,7 @@ import torch.nn as nn
 from tqdm.auto import tqdm
 
 from claq.core.clip_features import encode_images
+from claq.core.cost import build_uniform_cost, expected_query_cost
 from claq.core.runtime import apply_query_distribution, concept_answers_from_image_features, make_sensitive_mask
 from claq.models import Network
 from claq.sensitive_labels import compute_s_from_concept_targets, compute_s_from_image_features
@@ -89,10 +90,24 @@ def run_claq_epoch(
     max_batches: int | None = None,
     sensitive_target_mode: str = "soft",
     sensitive_target_indices: torch.Tensor | None = None,
+    cost_vector: torch.Tensor | None = None,
+    training_rollout_steps: int = 1,
+    lambda_q: float = 0.0,
+    designated_query_mask: torch.Tensor | None = None,
 ):
+    if training_rollout_steps < 1:
+        raise ValueError("training_rollout_steps must be at least 1")
     crit_task = nn.CrossEntropyLoss()
     crit_sens = nn.BCEWithLogitsLoss()
     sensitive_mask = make_sensitive_mask(actor.output_dim, sens_idx, train_device)
+    if cost_vector is None:
+        cost_vector = build_uniform_cost(actor.output_dim, train_device)
+    else:
+        cost_vector = cost_vector.to(train_device)
+    if designated_query_mask is None:
+        designated_query_mask = torch.zeros(actor.output_dim, device=train_device)
+    else:
+        designated_query_mask = designated_query_mask.to(train_device).float()
 
     if train:
         actor.train()
@@ -109,7 +124,10 @@ def run_claq_epoch(
     sum_task = 0.0
     sum_sens = 0.0
     sum_sens_acc = 0.0
-    sum_qpen = 0.0
+    sum_cost = 0.0
+    sum_exp_cost = 0.0
+    sum_set = 0.0
+    sum_designated_queries = 0.0
     sum_sens_q_rate = 0.0
     sum_q_entropy = 0.0
     sum_actor_grad = 0.0
@@ -157,23 +175,45 @@ def run_claq_epoch(
                 config=history_config,
                 sensitive_indices=sens_idx,
             )
-            query_distribution = actor(masked_answers, mask)
-            updated_answers = apply_query_distribution(
-                masked_answers=masked_answers,
-                answers=answers,
-                query_distribution=query_distribution,
-            )
-
             labels = labels.to(train_device)
-            logits_cls = classifier(updated_answers)
-            loss_task = crit_task(logits_cls, labels)
+            cumulative_expected_cost = torch.zeros((), device=train_device)
+            cumulative_designated_queries = torch.zeros((), device=train_device)
+            cumulative_sensitive_queries = torch.zeros((), device=train_device)
+            query_distribution = None
+            updated_answers = masked_answers
+            prefix_task_losses = []
+            rollout_steps = min(training_rollout_steps, actor.output_dim)
+            for _ in range(rollout_steps):
+                query_distribution = actor(updated_answers, mask)
+                cumulative_expected_cost = cumulative_expected_cost + expected_query_cost(
+                    query_distribution, cost_vector
+                )
+                cumulative_designated_queries = cumulative_designated_queries + (
+                    query_distribution * designated_query_mask
+                ).sum(dim=1).mean()
+                cumulative_sensitive_queries = cumulative_sensitive_queries + (
+                    query_distribution * sensitive_mask
+                ).sum(dim=1).mean()
+                updated_answers = apply_query_distribution(
+                    masked_answers=updated_answers,
+                    answers=answers,
+                    query_distribution=query_distribution,
+                )
+                logits_cls = classifier(updated_answers)
+                prefix_task_losses.append(crit_task(logits_cls, labels))
+                # The forward value is one-hot. Detaching the history mask keeps
+                # the discrete transcript while gradients flow through answers.
+                mask = torch.clamp(mask + query_distribution.detach(), 0.0, 1.0)
+
+            loss_task = torch.stack(prefix_task_losses).mean()
 
             s_logits = s_head(GradientReversal.apply(updated_answers, lambda_s)).squeeze(1)
             loss_sens = crit_sens(s_logits, s_target.to(train_device).float())
             sens_preds = (torch.sigmoid(s_logits) > 0.5).float()
             sens_acc = (sens_preds == s_target.to(train_device).float()).float().mean()
-            loss_qpen = (query_distribution * sensitive_mask).sum(dim=1).mean() * lambda_c
-            loss = loss_task + loss_sens + loss_qpen
+            loss_cost = cumulative_expected_cost * lambda_c
+            loss_set = cumulative_designated_queries * lambda_q
+            loss = loss_task + loss_sens + loss_cost + loss_set
 
             if train:
                 optimizer.zero_grad()
@@ -196,8 +236,11 @@ def run_claq_epoch(
         sum_task += float(loss_task.item())
         sum_sens += float(loss_sens.item())
         sum_sens_acc += float(sens_acc.item())
-        sum_qpen += float(loss_qpen.item())
-        sum_sens_q_rate += float((query_distribution * sensitive_mask).sum(dim=1).mean().item())
+        sum_cost += float(loss_cost.item())
+        sum_exp_cost += float(cumulative_expected_cost.item())
+        sum_set += float(loss_set.item())
+        sum_designated_queries += float(cumulative_designated_queries.item())
+        sum_sens_q_rate += float((cumulative_sensitive_queries / rollout_steps).item())
         sum_q_entropy += float(q_entropy.item())
         n_batches += 1
 
@@ -207,7 +250,10 @@ def run_claq_epoch(
         "task": sum_task / max(n_batches, 1),
         "sens": sum_sens / max(n_batches, 1),
         "sens_acc": sum_sens_acc / max(n_batches, 1),
-        "qpen": sum_qpen / max(n_batches, 1),
+        "cost": sum_cost / max(n_batches, 1),
+        "exp_cost": sum_exp_cost / max(n_batches, 1),
+        "set": sum_set / max(n_batches, 1),
+        "designated_queries": sum_designated_queries / max(n_batches, 1),
         "sens_q_rate": sum_sens_q_rate / max(n_batches, 1),
         "q_entropy": sum_q_entropy / max(n_batches, 1),
     }
@@ -243,6 +289,10 @@ def fit_claq(
     actor_eps_anneal_epochs: int | None = None,
     sensitive_target_mode: str = "soft",
     sensitive_target_indices: torch.Tensor | None = None,
+    cost_vector: torch.Tensor | None = None,
+    training_rollout_steps: int = 1,
+    lambda_q: float = 0.0,
+    designated_query_mask: torch.Tensor | None = None,
 ):
     history = []
     best = {"test_acc": -1.0}
@@ -279,6 +329,10 @@ def fit_claq(
             max_batches=max_train_batches,
             sensitive_target_mode=sensitive_target_mode,
             sensitive_target_indices=sensitive_target_indices,
+            cost_vector=cost_vector,
+            training_rollout_steps=training_rollout_steps,
+            lambda_q=lambda_q,
+            designated_query_mask=designated_query_mask,
         )
         test_metrics = run_claq_epoch(
             loader=test_loader,
@@ -302,6 +356,10 @@ def fit_claq(
             max_batches=max_test_batches,
             sensitive_target_mode=sensitive_target_mode,
             sensitive_target_indices=sensitive_target_indices,
+            cost_vector=cost_vector,
+            training_rollout_steps=training_rollout_steps,
+            lambda_q=lambda_q,
+            designated_query_mask=designated_query_mask,
         )
         if scheduler is not None:
             scheduler.step()
@@ -310,12 +368,16 @@ def fit_claq(
             "epoch": epoch,
             "lambda_s": lambda_s,
             "lambda_c": lambda_c,
+            "lambda_q": lambda_q,
             "train_acc": train_metrics["acc"],
             "train_loss": train_metrics["loss"],
             "train_task": train_metrics["task"],
             "train_sens": train_metrics["sens"],
             "train_sens_acc": train_metrics["sens_acc"],
-            "train_qpen": train_metrics["qpen"],
+            "train_cost": train_metrics["cost"],
+            "train_exp_cost": train_metrics["exp_cost"],
+            "train_set": train_metrics["set"],
+            "train_designated_queries": train_metrics["designated_queries"],
             "train_sens_q_rate": train_metrics["sens_q_rate"],
             "train_q_entropy": train_metrics["q_entropy"],
             "train_actor_grad_norm": train_metrics.get("actor_grad_norm"),
@@ -326,13 +388,16 @@ def fit_claq(
             "test_task": test_metrics["task"],
             "test_sens": test_metrics["sens"],
             "test_sens_acc": test_metrics["sens_acc"],
-            "test_qpen": test_metrics["qpen"],
+            "test_cost": test_metrics["cost"],
+            "test_exp_cost": test_metrics["exp_cost"],
+            "test_set": test_metrics["set"],
+            "test_designated_queries": test_metrics["designated_queries"],
             "test_sens_q_rate": test_metrics["sens_q_rate"],
             "test_q_entropy": test_metrics["q_entropy"],
         }
         history.append(row)
 
-        if test_metrics["acc"] >= best["test_acc"]:
+        if test_metrics["acc"] > best["test_acc"]:
             best = {
                 "test_acc": test_metrics["acc"],
                 "epoch": epoch,

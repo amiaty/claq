@@ -26,7 +26,12 @@ class Network(nn.Module):
         self.relu = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+    def forward(
+        self,
+        x: torch.Tensor,
+        mask: torch.Tensor | None = None,
+        hard: bool = True,
+    ) -> torch.Tensor:
         x = self.relu(self.norm1(self.layer1(x)))
         x = self.relu(self.norm2(self.layer2(x)))
 
@@ -41,6 +46,8 @@ class Network(nn.Module):
         query_logits = query_logits + query_mask.to(query_logits.device)
 
         query = self.softmax(query_logits / self.eps)
+        if not hard:
+            return query
         # Straight-through hard selection with soft gradients.
         query = (self.softmax(query_logits / 1e-9) - query).detach() + query
         return query

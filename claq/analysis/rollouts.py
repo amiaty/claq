@@ -64,12 +64,20 @@ def rollout_until_confidence(
     max_steps: int = 20,
     positive_class_idx: int | None = None,
     positive_class_name: str | None = None,
+    cost_vector: torch.Tensor | None = None,
+    cost_budget: float | None = None,
 ) -> dict:
     mask = init_mask.clone()
     masked_answers = answers_row.unsqueeze(0) * mask
     states = []
     sequence = []
     stop_reason = "max_steps"
+    if cost_vector is None:
+        cost_vector = torch.ones_like(answers_row)
+    else:
+        cost_vector = cost_vector.to(answers_row.device)
+    # Cumulative cost of the transcript, including the given initial history.
+    cumulative_cost = float((mask[0] * cost_vector).sum().item())
     empty_masked_answers = torch.zeros_like(masked_answers)
     empty_logits = bundle["classifier"](empty_masked_answers)
     empty_probs = F.softmax(empty_logits, dim=1)
@@ -105,10 +113,21 @@ def rollout_until_confidence(
         if step == max_steps:
             break
 
-        query_distribution = bundle["actor"](masked_answers, mask)[0].clone()
+        # Keep the actor's full soft ranking until feasibility constraints have
+        # been applied, then select the highest-ranked feasible query.
+        query_distribution = bundle["actor"](masked_answers, mask, hard=False)[0].clone()
         query_distribution = query_distribution.masked_fill(mask[0] > 0.5, -1e9)
+        if cost_budget is not None:
+            # Cost-feasible candidate set: drop queries that would exceed the budget.
+            infeasible = (cumulative_cost + cost_vector) > (cost_budget + 1e-9)
+            query_distribution = query_distribution.masked_fill(infeasible, -1e9)
+            if not bool((query_distribution > -1e8).any().item()):
+                stop_reason = "cost_exhausted"
+                break
         query_idx = int(query_distribution.argmax().item())
         answer_val = float(answers_row[query_idx].item())
+        query_cost = float(cost_vector[query_idx].item())
+        cumulative_cost += query_cost
         sequence.append(
             {
                 "step": step + 1,
@@ -118,6 +137,8 @@ def rollout_until_confidence(
                 "answer_name": "yes" if answer_val > 0 else "no",
                 "sensitive": bool(sensitive_mask[query_idx].item() > 0.5),
                 "prob": float(query_distribution[query_idx].item()),
+                "cost": query_cost,
+                "cumulative_cost": cumulative_cost,
             }
         )
         mask[0, query_idx] = 1.0
@@ -128,6 +149,7 @@ def rollout_until_confidence(
         "states": states,
         "sequence": sequence,
         "queries_asked": int(len(sequence)),
+        "total_cost": float(cumulative_cost),
         "sensitive_steps": int(sum(int(item["sensitive"]) for item in sequence)),
         "first_sensitive_step": None if first_sensitive is None else int(first_sensitive),
         "stop_reason": stop_reason,
