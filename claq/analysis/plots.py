@@ -87,18 +87,37 @@ def plot_lambda_tradeoff_summary(
         raise ValueError("summary_rows must not be empty")
 
     rows = sorted(summary_rows, key=lambda row: float(row["lambda_s"]))
+    validation_metrics = "validation_acc" in rows[0]
+    acc_key = "validation_acc" if validation_metrics else "test_acc"
+    sens_key = "validation_sens_q_rate" if validation_metrics else "test_sens_q_rate"
+    acc_ci_key = "validation_acc_ci95" if validation_metrics else "test_acc_ci95"
+    sens_ci_key = (
+        "validation_sens_q_rate_ci95" if validation_metrics else "test_sens_q_rate_ci95"
+    )
     lambdas = [float(row["lambda_s"]) for row in rows]
-    acc = [float(row["test_acc"]) for row in rows]
-    sens = [float(row["test_sens_q_rate"]) for row in rows]
+    acc = [float(row[acc_key]) for row in rows]
+    sens = [float(row[sens_key]) for row in rows]
 
     fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.6))
 
-    axes[0].plot(sens, acc, marker="o", linewidth=2.2, color="#3a6ea5")
+    acc_ci = [float(row.get(acc_ci_key, 0.0)) for row in rows]
+    sens_ci = [float(row.get(sens_ci_key, 0.0)) for row in rows]
+
+    axes[0].errorbar(
+        sens,
+        acc,
+        xerr=sens_ci,
+        yerr=acc_ci,
+        marker="o",
+        linewidth=2.2,
+        capsize=3,
+        color="#3a6ea5",
+    )
     for row in rows:
         label = "baseline" if float(row["lambda_s"]) == 0.0 else f"lambda_s={row['lambda_s']:.2f}"
         axes[0].annotate(
             label,
-            (float(row["test_sens_q_rate"]), float(row["test_acc"])),
+            (float(row[sens_key]), float(row[acc_key])),
             textcoords="offset points",
             xytext=(0, 8),
             ha="center",
@@ -109,8 +128,26 @@ def plot_lambda_tradeoff_summary(
     axes[0].set_ylabel("Accuracy")
     axes[0].grid(alpha=0.25)
 
-    axes[1].plot(lambdas, acc, marker="o", linewidth=2.2, label="Accuracy", color="#3a6ea5")
-    axes[1].plot(lambdas, sens, marker="s", linewidth=2.2, label="Sensitive query rate", color="#b58b00")
+    axes[1].errorbar(
+        lambdas,
+        acc,
+        yerr=acc_ci,
+        marker="o",
+        linewidth=2.2,
+        capsize=3,
+        label="Accuracy",
+        color="#3a6ea5",
+    )
+    axes[1].errorbar(
+        lambdas,
+        sens,
+        yerr=sens_ci,
+        marker="s",
+        linewidth=2.2,
+        capsize=3,
+        label="Sensitive query rate",
+        color="#b58b00",
+    )
     axes[1].set_title("Lambda sweep")
     axes[1].set_xlabel("lambda_s")
     axes[1].set_ylabel("Metric value")
