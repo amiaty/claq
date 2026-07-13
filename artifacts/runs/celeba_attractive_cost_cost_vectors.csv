@@ -1,0 +1,40 @@
+query_index,attribute,concept,sensitive,uniform_cost,uncertainty_cost
+0,5_o_Clock_Shadow,five o clock shadow,True,1.0,1.0
+1,Arched_Eyebrows,arched eyebrows,False,1.0,1.7714365
+2,Bags_Under_Eyes,bags under eyes,False,1.0,1.7837545
+3,Bald,bald,False,1.0,1.5279009
+4,Bangs,bangs,False,1.0,1.6034536
+5,Big_Lips,big lips,False,1.0,1.8478662
+6,Big_Nose,big nose,False,1.0,1.7744417
+7,Black_Hair,black hair,False,1.0,1.6979822
+8,Blond_Hair,blond hair,False,1.0,1.5801668
+9,Blurry,blurry,False,1.0,1.5976176
+10,Brown_Hair,brown hair,False,1.0,1.7682581
+11,Bushy_Eyebrows,bushy eyebrows,False,1.0,1.6597701
+12,Chubby,chubby,False,1.0,1.5817192
+13,Double_Chin,double chin,False,1.0,1.5853558
+14,Eyeglasses,eyeglasses,False,1.0,1.527174
+15,Goatee,goatee,True,1.0,1.0
+16,Gray_Hair,gray hair,False,1.0,1.5399867
+17,Heavy_Makeup,heavy makeup,True,1.0,1.0
+18,High_Cheekbones,high cheekbones,False,1.0,1.6404674
+19,Male,male,True,1.0,1.0
+20,Mouth_Slightly_Open,mouth slightly open,False,1.0,1.602524
+21,Mustache,mustache,True,1.0,1.0
+22,Narrow_Eyes,narrow eyes,False,1.0,1.7314137
+23,No_Beard,no beard,True,1.0,1.0
+24,Oval_Face,oval face,False,1.0,1.8941798
+25,Pale_Skin,pale skin,False,1.0,1.583905
+26,Pointy_Nose,pointy nose,False,1.0,1.8660679
+27,Receding_Hairline,receding hairline,False,1.0,1.618208
+28,Rosy_Cheeks,rosy cheeks,False,1.0,1.6060266
+29,Sideburns,sideburns,True,1.0,1.0
+30,Smiling,smiling,False,1.0,1.5220821
+31,Straight_Hair,straight hair,False,1.0,1.8027587
+32,Wavy_Hair,wavy hair,False,1.0,1.7346206
+33,Wearing_Earrings,wearing earrings,False,1.0,1.6983972
+34,Wearing_Hat,wearing hat,False,1.0,1.529553
+35,Wearing_Lipstick,wearing lipstick,True,1.0,1.0
+36,Wearing_Necklace,wearing necklace,False,1.0,1.7496862
+37,Wearing_Necktie,wearing necktie,False,1.0,1.5965846
+38,Young,young,False,1.0,1.407587
