@@ -8,6 +8,7 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from tqdm.auto import tqdm
 
 from claq.core.clip_features import encode_images
@@ -48,7 +49,9 @@ def build_claq_models(
 ):
     actor = Network(query_size=max_queries, output_size=max_queries, eps=actor_eps).to(device)
     classifier = Network(query_size=max_queries, output_size=num_classes, eps=None).to(device)
-    s_head = Network(query_size=max_queries, output_size=1, eps=None).to(device)
+    # The sensitive predictor estimates P(S | knowledge state, Y), so its input
+    # contains the encoded knowledge state and a one-hot task label.
+    s_head = Network(query_size=max_queries + num_classes, output_size=1, eps=None).to(device)
 
     if actor_checkpoint is not None:
         actor.load_state_dict(torch.load(actor_checkpoint, map_location="cpu"))
@@ -202,12 +205,18 @@ def run_claq_epoch(
                 logits_cls = classifier(updated_answers)
                 prefix_task_losses.append(crit_task(logits_cls, labels))
                 # The forward value is one-hot. Detaching the history mask keeps
-                # the discrete transcript while gradients flow through answers.
+                # the discrete knowledge state while gradients flow through answers.
                 mask = torch.clamp(mask + query_distribution.detach(), 0.0, 1.0)
 
             loss_task = torch.stack(prefix_task_losses).mean()
 
-            s_logits = s_head(GradientReversal.apply(updated_answers, lambda_s)).squeeze(1)
+            reversed_knowledge_state = GradientReversal.apply(updated_answers, lambda_s)
+            task_labels = F.one_hot(labels, num_classes=classifier.output_dim).to(
+                device=train_device,
+                dtype=updated_answers.dtype,
+            )
+            sensitive_input = torch.cat((reversed_knowledge_state, task_labels), dim=1)
+            s_logits = s_head(sensitive_input).squeeze(1)
             loss_sens = crit_sens(s_logits, s_target.to(train_device).float())
             sens_preds = (torch.sigmoid(s_logits) > 0.5).float()
             sens_acc = (sens_preds == s_target.to(train_device).float()).float().mean()

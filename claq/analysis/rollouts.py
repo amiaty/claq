@@ -76,7 +76,7 @@ def rollout_until_confidence(
         cost_vector = torch.ones_like(answers_row)
     else:
         cost_vector = cost_vector.to(answers_row.device)
-    # Cumulative cost of the transcript, including the given initial history.
+    # Cumulative cost of the knowledge state, including the given initial history.
     cumulative_cost = float((mask[0] * cost_vector).sum().item())
     empty_masked_answers = torch.zeros_like(masked_answers)
     empty_logits = bundle["classifier"](empty_masked_answers)

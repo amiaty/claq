@@ -5,10 +5,19 @@
   "training": "neural actor/classifier trained end-to-end on sampled partial histories",
   "decision_threshold": 0.5,
   "sensitive_target": "dataset gender label, 1=female and 0=male",
+  "sensitive_conditioning": "encoded knowledge state and one-hot profession label",
   "max_questions": 20,
   "num_epochs": 50,
   "batch_size": 256,
   "learning_rate": 0.001,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "qualitative_seed": 0,
   "history_config": {
     "min_history": 0,
     "max_history": 20,
@@ -20,25 +29,52 @@
     {
       "run_name": "neural_baseline_lambda_s_0",
       "budget": 20,
-      "accuracy": 0.4995,
-      "macro_f1": 0.48518368558797115,
-      "mean_confidence": 0.4559755325317383
+      "seeds": 5,
+      "accuracy": 0.5332,
+      "accuracy_std": 0.01988278149555538,
+      "macro_f1": 0.5317320242901473,
+      "macro_f1_std": 0.02610218168552552,
+      "mean_confidence": 0.4826354503631592,
+      "accuracy_ci95": 0.024687733967183108
     },
     {
       "run_name": "neural_claq_lambda_s_0_4",
       "budget": 20,
-      "accuracy": 0.4895,
-      "macro_f1": 0.4933001170830934,
-      "mean_confidence": 0.4804081916809082
+      "seeds": 5,
+      "accuracy": 0.5037,
+      "accuracy_std": 0.014956603892595398,
+      "macro_f1": 0.4971781921050547,
+      "macro_f1_std": 0.015028493315449826,
+      "mean_confidence": 0.47213066220283506,
+      "accuracy_ci95": 0.018571076588829984
+    }
+  ],
+  "sensitive_query_usage": [
+    {
+      "run_name": "neural_baseline_lambda_s_0",
+      "seeds": 5,
+      "sensitive_query_rate": 0.1058,
+      "sensitive_query_rate_std": 0.003976611308639555
+    },
+    {
+      "run_name": "neural_claq_lambda_s_0_4",
+      "seeds": 5,
+      "sensitive_query_rate": 0.029495,
+      "sensitive_query_rate_std": 0.02320312074915786
     }
   ],
   "outputs": {
     "curve": "artifacts/runs/bias_in_bios_claq_experiment_curve.csv",
-    "detail": "artifacts/runs/bias_in_bios_claq_experiment_detail.csv",
+    "curve_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_curve_by_seed.csv",
+    "detail_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_detail_by_seed.csv",
     "stopping": "artifacts/runs/bias_in_bios_claq_experiment_stopping.csv",
-    "queries": "artifacts/runs/bias_in_bios_claq_experiment_queries.csv",
+    "stopping_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_stopping_by_seed.csv",
+    "queries_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_queries_by_seed.csv",
     "history": "artifacts/runs/bias_in_bios_claq_experiment_history.csv",
     "query_usage": "artifacts/runs/bias_in_bios_claq_experiment_query_usage.csv",
+    "query_usage_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_query_usage_by_seed.csv",
+    "sensitive_query_summary": "artifacts/runs/bias_in_bios_claq_experiment_sensitive_query_summary.csv",
+    "sensitive_query_summary_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_sensitive_query_summary_by_seed.csv",
     "sample_comparison": "artifacts/runs/bias_in_bios_claq_experiment_sample_comparison.csv",
     "checkpoint": "artifacts/models/bias_in_bios_claq_experiment.pt"
   }
