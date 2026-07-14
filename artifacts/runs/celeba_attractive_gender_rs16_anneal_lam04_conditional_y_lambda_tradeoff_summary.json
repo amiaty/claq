@@ -16,6 +16,22 @@
     "validation_sens_q_rate_ci95": 0.11352830888666762
   },
   {
+    "run_name": "lam_0.20",
+    "lambda_s": 0.2,
+    "seeds": 5,
+    "epoch": 5.0,
+    "validation_acc": 0.7148739115115518,
+    "validation_acc_std": 0.005741866432421094,
+    "validation_sens_q_rate": 0.3684841898083687,
+    "validation_sens_q_rate_std": 0.07558677366983865,
+    "validation_loss": 0.8120248705148697,
+    "validation_loss_std": 0.018567038477201047,
+    "validation_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 0.19999999999999996,
+    "validation_acc_ci95": 0.007129468831631959,
+    "validation_sens_q_rate_ci95": 0.09385337560621487
+  },
+  {
     "run_name": "lam_0.40",
     "lambda_s": 0.4,
     "seeds": 5,
