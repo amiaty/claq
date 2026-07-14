@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import gc
 import random
+from collections.abc import Mapping
 
 import numpy as np
 import torch
@@ -62,13 +63,27 @@ def build_claq_models(
 
 
 def _unpack_claq_batch(batch):
+    if isinstance(batch, Mapping):
+        required = {"precomputed_answers", "labels", "sensitive_targets"}
+        missing = required.difference(batch)
+        if missing:
+            raise ValueError(f"Cached CLAQ batch is missing keys: {sorted(missing)}")
+        return (
+            None,
+            batch["labels"],
+            None,
+            batch["precomputed_answers"],
+            batch["sensitive_targets"],
+        )
     if len(batch) == 2:
         images, labels = batch
-        return images, labels, None
+        return images, labels, None, None, None
     if len(batch) == 3:
         images, labels, concept_targets = batch
-        return images, labels, concept_targets
-    raise ValueError("CLAQ batches must contain (images, labels) or (images, labels, concept_targets)")
+        return images, labels, concept_targets, None, None
+    raise ValueError(
+        "CLAQ batches must contain images or a cached-answer mapping"
+    )
 
 
 def run_claq_epoch(
@@ -139,38 +154,42 @@ def run_claq_epoch(
     for batch_index, batch in enumerate(loader):
         if max_batches is not None and batch_index >= max_batches:
             break
-        images, labels, concept_targets = _unpack_claq_batch(batch)
+        images, labels, concept_targets, cached_answers, cached_sensitive = _unpack_claq_batch(batch)
 
         with torch.no_grad():
-            image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
-            target_sens_idx = sens_idx if sensitive_target_indices is None else sensitive_target_indices
-            if concept_targets is None:
-                s_soft, s_hard = compute_s_from_image_features(
+            if cached_answers is not None:
+                answers = cached_answers.to(train_device, dtype=torch.float32)
+                s_target = cached_sensitive.to(train_device, dtype=torch.float32).reshape(-1)
+            else:
+                image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+                target_sens_idx = sens_idx if sensitive_target_indices is None else sensitive_target_indices
+                if concept_targets is None:
+                    s_soft, s_hard = compute_s_from_image_features(
+                        image_features=image_features,
+                        logit_scale=model_clip.logit_scale.exp(),
+                        dictionary=dictionary,
+                        sens_idx=target_sens_idx,
+                        tau=sensitive_tau,
+                        topk=sensitive_topk,
+                    )
+                else:
+                    s_soft, s_hard = compute_s_from_concept_targets(
+                        concept_targets=concept_targets.to(train_device),
+                        sens_idx=target_sens_idx,
+                    )
+                if sensitive_target_mode == "soft":
+                    s_target = s_soft
+                elif sensitive_target_mode in {"hard", "max"}:
+                    s_target = s_hard
+                else:
+                    raise ValueError(f"Unknown sensitive_target_mode: {sensitive_target_mode}")
+                answers = concept_answers_from_image_features(
                     image_features=image_features,
-                    logit_scale=model_clip.logit_scale.exp(),
                     dictionary=dictionary,
-                    sens_idx=target_sens_idx,
-                    tau=sensitive_tau,
-                    topk=sensitive_topk,
+                    answering_model=answering_model,
+                    train_device=train_device,
+                    threshold=threshold_for_binarization,
                 )
-            else:
-                s_soft, s_hard = compute_s_from_concept_targets(
-                    concept_targets=concept_targets.to(train_device),
-                    sens_idx=target_sens_idx,
-                )
-            if sensitive_target_mode == "soft":
-                s_target = s_soft
-            elif sensitive_target_mode in {"hard", "max"}:
-                s_target = s_hard
-            else:
-                raise ValueError(f"Unknown sensitive_target_mode: {sensitive_target_mode}")
-            answers = concept_answers_from_image_features(
-                image_features=image_features,
-                dictionary=dictionary,
-                answering_model=answering_model,
-                train_device=train_device,
-                threshold=threshold_for_binarization,
-            )
 
         with torch.set_grad_enabled(train):
             mask, masked_answers = sample_history_mask(

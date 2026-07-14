@@ -76,6 +76,18 @@
     "sensitive_query_summary": "artifacts/runs/bias_in_bios_claq_experiment_sensitive_query_summary.csv",
     "sensitive_query_summary_by_seed": "artifacts/runs/bias_in_bios_claq_experiment_sensitive_query_summary_by_seed.csv",
     "sample_comparison": "artifacts/runs/bias_in_bios_claq_experiment_sample_comparison.csv",
-    "checkpoint": "artifacts/models/bias_in_bios_claq_experiment.pt"
+    "checkpoint_manifest": "artifacts/models/bias_in_bios_claq_experiment_checkpoints.json",
+    "checkpoints": [
+      "artifacts/models/bias_in_bios_claq_experiment_neural_baseline_lambda_s_0_seed_0_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_claq_lambda_s_0_4_seed_0_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_baseline_lambda_s_0_seed_1_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_claq_lambda_s_0_4_seed_1_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_baseline_lambda_s_0_seed_2_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_claq_lambda_s_0_4_seed_2_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_baseline_lambda_s_0_seed_3_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_claq_lambda_s_0_4_seed_3_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_baseline_lambda_s_0_seed_4_best.pt",
+      "artifacts/models/bias_in_bios_claq_experiment_neural_claq_lambda_s_0_4_seed_4_best.pt"
+    ]
   }
 }
