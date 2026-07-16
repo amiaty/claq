@@ -6,8 +6,12 @@ Current notebooks:
 
 - `notebooks/bias_in_bios_dataset_creation.ipynb`
 - `notebooks/bias_in_bios_concept_qa_training.ipynb`
-- `notebooks/bias_in_bios_experiment.ipynb`
-- `notebooks/celeba_experiment.ipynb`
+- `notebooks/bias_in_bios_leakage_experiment.ipynb`
+- `notebooks/bias_in_bios_cost_experiment.ipynb`
+- `notebooks/bias_in_bios_joint_experiment.ipynb`
+- `notebooks/celeba_leakage_experiment.ipynb`
+- `notebooks/celeba_cost_experiment.ipynb`
+- `notebooks/celeba_joint_experiment.ipynb`
 - `notebooks/cifar10_experiment.ipynb`
 
 Install with:
