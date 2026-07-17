@@ -1,0 +1,93 @@
+{
+  "experiment_name": "bias_in_bios_leakage",
+  "target": "original_28_way_profession",
+  "answer_source": "hard Concept-QA answers converted to -1/+1",
+  "training": "neural actor/classifier trained end-to-end on sampled partial histories",
+  "decision_threshold": 0.5,
+  "sensitive_target": "dataset gender label, 1=female and 0=male",
+  "sensitive_conditioning": "encoded knowledge state and one-hot profession label",
+  "max_questions": 20,
+  "num_epochs": 50,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "qualitative_seed": 0,
+  "history_config": {
+    "min_history": 0,
+    "max_history": 20,
+    "non_sensitive_only": false
+  },
+  "num_concepts": 58,
+  "num_professions": 28,
+  "best_budget_by_run": [
+    {
+      "run_name": "neural_baseline_lambda_s_0",
+      "budget": 20,
+      "seeds": 5,
+      "accuracy": 0.5379,
+      "accuracy_std": 0.01233085560697236,
+      "macro_f1": 0.5335891498010933,
+      "macro_f1_std": 0.019060132181094994,
+      "mean_confidence": 0.5190499365329743,
+      "accuracy_ci95": 0.015310779474226602
+    },
+    {
+      "run_name": "neural_claq_lambda_s_0_4",
+      "budget": 20,
+      "seeds": 5,
+      "accuracy": 0.4981,
+      "accuracy_std": 0.026959228475607368,
+      "macro_f1": 0.48988675058870673,
+      "macro_f1_std": 0.035502833592447755,
+      "mean_confidence": 0.46162163019180297,
+      "accuracy_ci95": 0.03347430341751141
+    }
+  ],
+  "sensitive_query_usage": [
+    {
+      "run_name": "neural_baseline_lambda_s_0",
+      "seeds": 5,
+      "sensitive_query_rate": 0.11976499999999998,
+      "sensitive_query_rate_std": 0.009707996059949745
+    },
+    {
+      "run_name": "neural_claq_lambda_s_0_4",
+      "seeds": 5,
+      "sensitive_query_rate": 0.034960000000000005,
+      "sensitive_query_rate_std": 0.01287932694281809
+    }
+  ],
+  "outputs": {
+    "curve": "artifacts/runs/bias_in_bios_leakage_curve.csv",
+    "curve_by_seed": "artifacts/runs/bias_in_bios_leakage_curve_by_seed.csv",
+    "detail_by_seed": "artifacts/runs/bias_in_bios_leakage_detail_by_seed.csv",
+    "stopping": "artifacts/runs/bias_in_bios_leakage_stopping.csv",
+    "stopping_by_seed": "artifacts/runs/bias_in_bios_leakage_stopping_by_seed.csv",
+    "queries_by_seed": "artifacts/runs/bias_in_bios_leakage_queries_by_seed.csv",
+    "history": "artifacts/runs/bias_in_bios_leakage_history.csv",
+    "query_usage": "artifacts/runs/bias_in_bios_leakage_query_usage.csv",
+    "query_usage_by_seed": "artifacts/runs/bias_in_bios_leakage_query_usage_by_seed.csv",
+    "sensitive_query_summary": "artifacts/runs/bias_in_bios_leakage_sensitive_query_summary.csv",
+    "sensitive_query_summary_by_seed": "artifacts/runs/bias_in_bios_leakage_sensitive_query_summary_by_seed.csv",
+    "sample_comparison": "artifacts/runs/bias_in_bios_leakage_sample_comparison.csv",
+    "checkpoint_manifest": "artifacts/models/bias_in_bios_leakage_checkpoints.json",
+    "checkpoints": [
+      "artifacts/models/bias_in_bios_leakage_neural_baseline_lambda_s_0_seed_0_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_claq_lambda_s_0_4_seed_0_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_baseline_lambda_s_0_seed_1_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_claq_lambda_s_0_4_seed_1_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_baseline_lambda_s_0_seed_2_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_claq_lambda_s_0_4_seed_2_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_baseline_lambda_s_0_seed_3_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_claq_lambda_s_0_4_seed_3_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_baseline_lambda_s_0_seed_4_best.pt",
+      "artifacts/models/bias_in_bios_leakage_neural_claq_lambda_s_0_4_seed_4_best.pt"
+    ]
+  }
+}

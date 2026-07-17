@@ -1,0 +1,15 @@
+{
+  "selected_lambda_c": 0.3,
+  "selection_rule": "lowest validation cost within the accuracy tolerance",
+  "screening_seed": 0,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "calibration_seed": 1729,
+  "calibration_size": 2000,
+  "budget_evaluation_size": 0
+}

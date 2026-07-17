@@ -1,0 +1,50 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_s": 0.0,
+    "seeds": 5,
+    "epoch": 5.0,
+    "validation_acc": 0.7216388986761967,
+    "validation_acc_std": 0.0016918009815703803,
+    "validation_sens_q_rate": 0.5609226495027542,
+    "validation_sens_q_rate_std": 0.06812231392201976,
+    "validation_loss": 0.7666908478736877,
+    "validation_loss_std": 0.01688025927222542,
+    "validation_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 1.0,
+    "validation_acc_ci95": 0.002100648370941731,
+    "validation_sens_q_rate_ci95": 0.08458502467130699
+  },
+  {
+    "run_name": "lam_0.20",
+    "lambda_s": 0.2,
+    "seeds": 5,
+    "epoch": 5.0,
+    "validation_acc": 0.7154879951678663,
+    "validation_acc_std": 0.007167406931254202,
+    "validation_sens_q_rate": 0.3485671378672123,
+    "validation_sens_q_rate_std": 0.09468300624455123,
+    "validation_loss": 0.817445461153984,
+    "validation_loss_std": 0.026068477029425524,
+    "validation_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 1.0,
+    "validation_acc_ci95": 0.008899511147014464,
+    "validation_sens_q_rate_ci95": 0.11756448009556145
+  },
+  {
+    "run_name": "lam_0.40",
+    "lambda_s": 0.4,
+    "seeds": 5,
+    "epoch": 5.0,
+    "validation_acc": 0.6954950420294962,
+    "validation_acc_std": 0.0048588786460207305,
+    "validation_sens_q_rate": 0.044196034744381905,
+    "validation_sens_q_rate_std": 0.059172934710320126,
+    "validation_loss": 0.8705200618505478,
+    "validation_loss_std": 0.006795583173683563,
+    "validation_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 1.0,
+    "validation_acc_ci95": 0.006033094686404992,
+    "validation_sens_q_rate_ci95": 0.07347290269786638
+  }
+]

@@ -1,0 +1,3 @@
+run_name,seeds,sensitive_query_rate,sensitive_query_rate_std
+neural_baseline_lambda_s_0,5,0.11976499999999998,0.009707996059949745
+neural_claq_lambda_s_0_4,5,0.034960000000000005,0.01287932694281809

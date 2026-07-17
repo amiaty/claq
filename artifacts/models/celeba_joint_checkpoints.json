@@ -1,0 +1,31 @@
+{
+  "experiment": "celeba_joint",
+  "horizon": 15,
+  "lambda_q": 0.0,
+  "lambda_s_star": 0.4,
+  "lambda_c_star": 0.2,
+  "probe_train_size": 20000,
+  "probe_validation_size": 10000,
+  "checkpoints": {
+    "base_seed_0": "artifacts/models/celeba_joint_base_seed_0_best.pt",
+    "leak_seed_0": "artifacts/models/celeba_joint_leak_seed_0_best.pt",
+    "cost_seed_0": "artifacts/models/celeba_joint_cost_seed_0_best.pt",
+    "joint_seed_0": "artifacts/models/celeba_joint_joint_seed_0_best.pt",
+    "base_seed_1": "artifacts/models/celeba_joint_base_seed_1_best.pt",
+    "leak_seed_1": "artifacts/models/celeba_joint_leak_seed_1_best.pt",
+    "cost_seed_1": "artifacts/models/celeba_joint_cost_seed_1_best.pt",
+    "joint_seed_1": "artifacts/models/celeba_joint_joint_seed_1_best.pt",
+    "base_seed_2": "artifacts/models/celeba_joint_base_seed_2_best.pt",
+    "leak_seed_2": "artifacts/models/celeba_joint_leak_seed_2_best.pt",
+    "cost_seed_2": "artifacts/models/celeba_joint_cost_seed_2_best.pt",
+    "joint_seed_2": "artifacts/models/celeba_joint_joint_seed_2_best.pt",
+    "base_seed_3": "artifacts/models/celeba_joint_base_seed_3_best.pt",
+    "leak_seed_3": "artifacts/models/celeba_joint_leak_seed_3_best.pt",
+    "cost_seed_3": "artifacts/models/celeba_joint_cost_seed_3_best.pt",
+    "joint_seed_3": "artifacts/models/celeba_joint_joint_seed_3_best.pt",
+    "base_seed_4": "artifacts/models/celeba_joint_base_seed_4_best.pt",
+    "leak_seed_4": "artifacts/models/celeba_joint_leak_seed_4_best.pt",
+    "cost_seed_4": "artifacts/models/celeba_joint_cost_seed_4_best.pt",
+    "joint_seed_4": "artifacts/models/celeba_joint_joint_seed_4_best.pt"
+  }
+}
