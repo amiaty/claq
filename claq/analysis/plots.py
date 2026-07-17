@@ -251,12 +251,12 @@ def plot_rollout_comparisons(
     raw_dataset,
     output_path: str | Path,
     title_prefix: str,
-    box_fontsize: float = 19,
-    title_fontsize: float = 19,
-    text_wrap_width: int = 66,
+    box_fontsize: float = 16,
+    title_fontsize: float = 16,
+    text_wrap_width: int = 72,
     path_items: int = 10,
     confidence_items: int = 10,
-    column_wspace: float = 0.10,
+    column_wspace: float = 0.16,
     left_margin: float = 0.012,
     right_margin: float = 0.999,
 ) -> Path:
@@ -266,22 +266,56 @@ def plot_rollout_comparisons(
         raise ValueError("records must not be empty")
     _ = title_prefix  # Kept for backward compatibility; not shown in the figure.
 
+    text_blocks = [
+        (
+            _wrap_block(
+                "Baseline",
+                row,
+                "baseline",
+                wrap_width=text_wrap_width,
+                seq_items=path_items,
+                conf_items=confidence_items,
+            ),
+            _wrap_block(
+                "CLAQ",
+                row,
+                "claq",
+                wrap_width=text_wrap_width,
+                seq_items=path_items,
+                conf_items=confidence_items,
+            ),
+        )
+        for row in records
+    ]
+    # A fixed row height causes long confidence and query paths to extend into
+    # the next case. Size each row from its rendered line count instead.
+    line_height_inches = box_fontsize * 1.28 / 72.0
+    row_heights = [
+        max(3.8, 1.0 + max(base.count("\n"), claq.count("\n")) * line_height_inches)
+        for base, claq in text_blocks
+    ]
     fig, axes = plt.subplots(
         len(records),
         3,
-        figsize=(25.0, max(3.6, 3.5 * len(records))),
-        gridspec_kw={"width_ratios": [0.72, 2.55, 2.55]},
+        figsize=(25.0, sum(row_heights)),
+        gridspec_kw={
+            "width_ratios": [0.72, 2.55, 2.55],
+            "height_ratios": row_heights,
+        },
     )
     if len(records) == 1:
         axes = np.array([axes])
 
-    for (ax_img, ax_base, ax_claq), row in zip(axes, records):
+    for (ax_img, ax_base, ax_claq), row, (baseline_text, claq_text) in zip(
+        axes, records, text_blocks
+    ):
         image, _ = raw_dataset[row["sample_idx"]]
         ax_img.imshow(image)
         ax_img.axis("off")
         start_text = ", ".join(row["initial_history"]) if row["initial_history"] else "(empty)"
         ax_img.set_title(
-            f"sample {row['sample_idx']}\ntrue: {row['label_name']}\nhistory ({row['initial_history_size']}): {start_text}",
+            f"sample {row['sample_idx']}\ntrue: {row['label_name']}\n"
+            f"initial knowledge ({row['initial_history_size']}): {start_text}",
             fontsize=title_fontsize,
             pad=8,
         )
@@ -294,14 +328,7 @@ def plot_rollout_comparisons(
         ax_base.text(
             0.0,
             0.98,
-            _wrap_block(
-                "Baseline",
-                row,
-                "baseline",
-                wrap_width=text_wrap_width,
-                seq_items=path_items,
-                conf_items=confidence_items,
-            ),
+            baseline_text,
             fontsize=box_fontsize,
             va="top",
             ha="left",
@@ -313,14 +340,7 @@ def plot_rollout_comparisons(
         ax_claq.text(
             0.0,
             0.98,
-            _wrap_block(
-                "CLAQ",
-                row,
-                "claq",
-                wrap_width=text_wrap_width,
-                seq_items=path_items,
-                conf_items=confidence_items,
-            ),
+            claq_text,
             fontsize=box_fontsize,
             va="top",
             ha="left",
@@ -330,7 +350,14 @@ def plot_rollout_comparisons(
             bbox=dict(boxstyle="round,pad=0.40", facecolor="#eef5ff", edgecolor="#3a6ea5", linewidth=1.1),
         )
 
-    plt.subplots_adjust(left=left_margin, right=right_margin, top=0.965, bottom=0.03, wspace=column_wspace, hspace=0.55)
+    plt.subplots_adjust(
+        left=left_margin,
+        right=right_margin,
+        top=0.98,
+        bottom=0.02,
+        wspace=column_wspace,
+        hspace=0.32,
+    )
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return output_path
